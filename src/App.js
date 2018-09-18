@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
+
+import CardGrid from './components/card/cardGrid'
+
 import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+
   render() {
+
+    const cards = 
+    [
+      [1,2,3,11,22,33], 
+      [4,5,6,44,55,66], 
+      [7,8,9,77,88,99]
+    ];
+
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <CardGrid cards={cards}></CardGrid>
       </div>
     );
   }
