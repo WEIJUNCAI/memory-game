@@ -2,19 +2,13 @@ import React, { Component } from 'react';
 
 import CardGrid from './components/card/cardGrid'
 
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
 
   render() {
 
-    const cards = 
-    [
-      [1,2,3,11,22,33], 
-      [4,5,6,44,55,66], 
-      [7,8,9,77,88,99]
-    ];
+    const cards = getInitialCards();
 
     return (
       <div className="App">
@@ -22,6 +16,35 @@ class App extends Component {
       </div>
     );
   }
+}
+
+function getInitialCards() {
+  const cards = [];
+  const rowNum = 6, colNum = 6;
+  for(let i = 0; i < rowNum; ++i) {
+    cards[i] = []
+    for(let j = 0; j < colNum; ++j) {
+      cards[i][j] = {
+        row: i,
+        col: j,
+        content: i + j, 
+        isTurnedOver: false 
+      };
+    }
+  }
+
+
+// function getInitialCards2() {
+//   return 
+//   [
+//     [{row: 0, col: 0,
+//       content: 0, 
+//       isTurnedOver: true 
+//     }]
+//   ];
+// }
+
+  return cards;
 }
 
 export default App;
