@@ -10,10 +10,6 @@ import './cardGrid.css'
 
 class CardGrid extends Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { cards, onCardClick } = this.props;
 
