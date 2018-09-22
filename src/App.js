@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import CardGrid from './components/card/cardGrid'
+import GamePanel from './components/gamePanel/gamePanel'
 
 import './App.css';
 
@@ -12,7 +12,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <CardGrid cards={cards}></CardGrid>
+        <GamePanel cards={cards}></GamePanel>
       </div>
     );
   }
@@ -32,18 +32,6 @@ function getInitialCards() {
       };
     }
   }
-
-
-// function getInitialCards2() {
-//   return 
-//   [
-//     [{row: 0, col: 0,
-//       content: 0, 
-//       isTurnedOver: true 
-//     }]
-//   ];
-// }
-
   return cards;
 }
 
