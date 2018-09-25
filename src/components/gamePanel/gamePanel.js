@@ -9,7 +9,7 @@ class GamePanel extends Component {
   constructor(props) {
     super(props);
     // fstTurnedCard records the most recent uncommitted card flip
-    this.state = {cards: props.cards, fstTurnedCard: null};
+    this.state = { cards: props.cards, fstTurnedCard: null };
     this.handleCardClick = this.handleCardClick.bind(this);
     this.handleResetClick = this.handleResetClick.bind(this);
   }
@@ -21,9 +21,9 @@ class GamePanel extends Component {
     // the clicked card should be revealed
     // no matter the circumstances
     this.setState(prevState => {
-      let newState = {...prevState};
+      let newState = { ...prevState };
       newState.cards[targetCard.rowIdx][targetCard.colIdx].isTurnedOver = true;
-      if(!prevState.fstTurnedCard) {
+      if (!prevState.fstTurnedCard) {
         newState.fstTurnedCard = targetCard;
       }
       return newState;
@@ -31,7 +31,7 @@ class GamePanel extends Component {
 
     // if the click flips the first (uncommitted) card,
     // no further actions are required
-    if(isFstCardTurn) {
+    if (isFstCardTurn) {
       return;
     }
 
@@ -39,27 +39,29 @@ class GamePanel extends Component {
     // is the same as that of the first card, we should either
     // - make the flip permanet, or
     // - turn both cards back to hidden
-    this.setState(prevState => {
-      let newState = {...prevState};
-      newState.fstTurnedCard = null;
+    setTimeout(() => {
+      this.setState(prevState => {
+        let newState = { ...prevState };
+        newState.fstTurnedCard = null;
 
-      if(targetCard.displayVal !== prevState.fstTurnedCard.displayVal) {
-        newState.cards[targetCard.rowIdx][targetCard.colIdx].isTurnedOver = false;
-        newState.cards[prevState.fstTurnedCard.rowIdx][prevState.fstTurnedCard.colIdx].isTurnedOver = false;
-      }
+        if (targetCard.displayVal !== prevState.fstTurnedCard.displayVal) {
+          newState.cards[targetCard.rowIdx][targetCard.colIdx].isTurnedOver = false;
+          newState.cards[prevState.fstTurnedCard.rowIdx][prevState.fstTurnedCard.colIdx].isTurnedOver = false;
+        }
 
-      return newState;
-    });
+        return newState;
+      });
+    }, 1000);
   }
 
   handleResetClick() {
     // turn all cards into hidden state
     this.setState(prevState => {
-      let newState = {...prevState};
+      let newState = { ...prevState };
       newState.fstTurnedCard = null;
-      newState.cards = newState.cards.map(cardRow => 
+      newState.cards = newState.cards.map(cardRow =>
         cardRow.map(card => {
-          return { ...card, isTurnedOver: false}; 
+          return { ...card, isTurnedOver: false };
         }));
 
       return newState;

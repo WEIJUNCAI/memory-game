@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 
 import GamePanel from './components/gamePanel/gamePanel'
 
+import { generateRandomGrid } from './shared/randomGridHelper'
+
 import './App.css';
 
 class App extends Component {
 
   render() {
 
-    const cards = getInitialCards();
+    const cards = getInitialCards(6);
 
     return (
       <div className="App">
@@ -18,16 +20,17 @@ class App extends Component {
   }
 }
 
-function getInitialCards() {
-  const cards = [];
-  const rowNum = 6, colNum = 6;
+function getInitialCards(maxNumber) {
+  let cards = [];
+  const randGrid = generateRandomGrid(maxNumber);
+  const rowNum = randGrid.length, colNum = randGrid[0].length;
   for(let i = 0; i < rowNum; ++i) {
     cards[i] = []
     for(let j = 0; j < colNum; ++j) {
       cards[i][j] = {
         row: i,
         col: j,
-        content: i + j, 
+        content: randGrid[i][j], 
         isTurnedOver: false 
       };
     }
