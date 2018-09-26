@@ -5,8 +5,8 @@ export function generateRandomGrid(maxNumber) {
   if(maxNumber < 0 || Math.floor(maxNumber) !== maxNumber) {
     return null;
   }
-  let totalCardNumber = 2 * maxNumber
-  let cardsArray = [], cardsGrid = [];
+  const totalCardNumber = 2 * maxNumber
+  const cardsArray = [], cardsGrid = [];
   for(let i = 0; i < maxNumber; ++i) {
     cardsArray.push(i);
     cardsArray.push(i);
@@ -30,7 +30,7 @@ function randomInt(max, min = 0) {
   if(max < min) {
     return null;
   }
-  let intMax = Math.floor(max), intMin = Math.floor(min);
+  const intMax = Math.floor(max), intMin = Math.floor(min);
   return intMin + Math.floor((intMax - intMin) * Math.random());
 }
 
@@ -38,8 +38,8 @@ function randomInt(max, min = 0) {
 // calculate the two factors whose product is equal to the target
 // and their difference is minimal
 function closestFactors(target) {
-  let sqrt = Math.floor(Math.sqrt(target));
-  let results = [];
+  const sqrt = Math.floor(Math.sqrt(target));
+  const results = [];
   for(let i = 2; i <= sqrt; ++i) {
     let intQuotient = Math.floor(target / i);
     if(target / i === intQuotient) {

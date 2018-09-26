@@ -3,15 +3,32 @@ import Container from 'react-bootstrap/lib/Container';
 
 import CardGrid from '../card/cardGrid';
 import GameHeader from './gameHeader';
+import Timer from './timer'; 
 
 class GamePanel extends Component {
 
   constructor(props) {
     super(props);
     // fstTurnedCard records the most recent uncommitted card flip
-    this.state = { cards: props.cards, fstTurnedCard: null };
+    this.state = {
+       cards: props.cards, 
+       fstTurnedCard: null, 
+       startTime: new Date(),
+       currnetTime: new Date()
+      };
     this.handleCardClick = this.handleCardClick.bind(this);
     this.handleResetClick = this.handleResetClick.bind(this);
+  }
+
+  componentDidMount() {
+    this.timerId = setInterval(
+      () => this.setState({ currnetTime: new Date() }), 
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId);
   }
 
   handleCardClick(targetCard) {
@@ -59,6 +76,8 @@ class GamePanel extends Component {
     this.setState(prevState => {
       let newState = { ...prevState };
       newState.fstTurnedCard = null;
+      newState.startTime = new Date();
+      newState.currnetTime = new Date();
       newState.cards = newState.cards.map(cardRow =>
         cardRow.map(card => {
           return { ...card, isTurnedOver: false };
@@ -68,11 +87,27 @@ class GamePanel extends Component {
     });
   }
 
+  getElapsedMinSec(startTime, endTime) {
+    const elapsedTotalSec = (endTime - startTime) / 1000;
+    const result = {};
+
+    result.elapsedMin = Math.floor(elapsedTotalSec / 60);
+    result.elapsedSec = Math.floor(elapsedTotalSec % 60);
+
+    return result;
+  }
+
+
   render() {
+    const { elapsedMin, elapsedSec } = this.getElapsedMinSec(this.state.startTime, this.state.currnetTime);
+
     return (
       <Container className="pt-3">
         <GameHeader
           onResetClick={this.handleResetClick}></GameHeader>
+        <Timer
+          elapsedMin={elapsedMin}
+          elapsedSec={elapsedSec}></Timer>
         <CardGrid
           cards={this.state.cards}
           onCardClick={this.handleCardClick} />

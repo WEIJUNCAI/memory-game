@@ -21,7 +21,7 @@ class App extends Component {
 }
 
 function getInitialCards(maxNumber) {
-  let cards = [];
+  const cards = [];
   const randGrid = generateRandomGrid(maxNumber);
   const rowNum = randGrid.length, colNum = randGrid[0].length;
   for(let i = 0; i < rowNum; ++i) {
