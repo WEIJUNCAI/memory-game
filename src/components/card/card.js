@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import Button from 'react-bootstrap/lib/Button';
 
 class Card extends Component {
@@ -23,6 +25,11 @@ class Card extends Component {
     );
   }
 
+}
+
+Card.propTypes = {
+  displayVal: PropTypes.string.isRequired,
+  isTurnedOver: PropTypes.bool.isRequired
 }
 
 export default Card;

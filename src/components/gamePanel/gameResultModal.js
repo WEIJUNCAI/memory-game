@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
@@ -32,6 +33,11 @@ class GameResultModal extends Component {
       </Modal>
     );
   }
+}
+
+GameResultModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onGameResultModalClose: PropTypes.func.isRequired
 }
 
 export default GameResultModal;

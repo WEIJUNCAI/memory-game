@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import Container from 'react-bootstrap/lib/Container';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
@@ -32,6 +34,18 @@ class CardGrid extends Component {
       </Container>
     );
   }
+}
+
+CardGrid.propTypes = {
+  cards: PropTypes.arrayOf(
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        content: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+        isTurnedOver: PropTypes.bool.isRequired
+      })
+    )
+  ).isRequired,
+  onCardClick: PropTypes.func.isRequired
 }
 
 export default CardGrid;

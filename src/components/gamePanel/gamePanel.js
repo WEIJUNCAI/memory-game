@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Fragment } from 'react';
+import PropTypes from 'prop-types';
 
 import Container from 'react-bootstrap/lib/Container';
 
@@ -236,6 +237,18 @@ class GamePanel extends Component {
       </Fragment>
     );
   }
+}
+
+GamePanel.propTypes = {
+  cards: PropTypes.arrayOf(
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        content: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+        isTurnedOver: PropTypes.bool.isRequired
+      })
+    )
+  ).isRequired,
+  timeLimit: PropTypes.number.isRequired
 }
 
 export default GamePanel;

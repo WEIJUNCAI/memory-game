@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Button from 'react-bootstrap/lib/Button';
 import Navbar from 'react-bootstrap/lib/Navbar';
@@ -30,6 +31,17 @@ class GameHeader extends Component {
       </Navbar>
     );
   }
+}
+
+GameHeader.propTypes = {
+  timeLimit: PropTypes.number.isRequired,
+  cardNum: PropTypes.number.isRequired,
+
+  onCardNumConfigChange: PropTypes.func.isRequired,
+  onTimeLimitConfigChange: PropTypes.func.isRequired,
+  onGameConfigCanceled: PropTypes.func.isRequired,
+  onGameConfigSaved: PropTypes.func.isRequired,
+  onResetClick: PropTypes.func.isRequired
 }
 
 export default GameHeader;

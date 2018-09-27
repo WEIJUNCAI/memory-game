@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import Badge from 'react-bootstrap/lib/Badge';
 
 class Timer extends Component {
@@ -15,6 +17,11 @@ class Timer extends Component {
       </div>
     );
   }
+}
+
+Timer.propTypes = {
+  remainingMin: PropTypes.number.isRequired, 
+  remainingSec: PropTypes.number.isRequired
 }
 
 export default Timer;
