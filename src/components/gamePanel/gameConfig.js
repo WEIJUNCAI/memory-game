@@ -5,14 +5,14 @@ import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
+import Form from 'react-bootstrap/lib/Form';
 
 class GameConfig extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      cardInputValidity: "valid",
-      timeInputValidity: "valid",
+      validated: false,
       modalShow: false 
     };
 
@@ -28,14 +28,11 @@ class GameConfig extends Component {
   }
 
   handleModalClose() {
-    this.setState({modalShow: false});
+    this.setState({modalShow: false, validated: false});
+    this.props.onGameConfigCanceled();
   }
 
   handleCardNumInputChange(event) {
-    if(event.target.value > 72) {
-      this.setState({cardInputValidity: "invalid"})
-      return;
-    }
     this.props.onCardNumConfigChange(event.target.value);
   }
 
@@ -44,8 +41,15 @@ class GameConfig extends Component {
   }
 
   handleGameConfigSave(event) {
-    this.props.onGameConfigSaved();
-    this.setState({modalShow: false});
+
+    const form = event.currentTarget;
+    if(form.checkValidity() === true) {
+      this.props.onGameConfigSaved();
+      this.setState({modalShow: false});
+    }
+    this.setState({validated: true});
+    event.preventDefault();
+    event.stopPropagation();
   }
   
   render() {
@@ -57,47 +61,59 @@ class GameConfig extends Component {
           className="mx-3">New game</Button>
 
         <Modal show={this.state.modalShow} onHide={this.handleModalClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Adjust game settings</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
-            <InputGroup className="mb-3">
-              <InputGroup.Prepend>
-                <InputGroup.Text>Number of cards</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl 
-                type="number"
-                value={this.props.cardNum.toString()}
-                onChange={this.handleCardNumInputChange} />
-              <FormControl.Feedback type={this.state.cardInputValidity}>
-                Max card number should be integer less than 72.
-              </FormControl.Feedback>
-            </InputGroup>
-
-            <InputGroup>
-              <InputGroup.Prepend>
-                <InputGroup.Text>Game time limit</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl 
-                type="number"
-                value={this.props.timeLimit.toString()}
-                onChange={this.handleTimeLimitInputChange} />
-              <InputGroup.Append>
-                <InputGroup.Text>minutes</InputGroup.Text>
-              </InputGroup.Append>
-              <FormControl.Feedback type={this.state.timeInputValidity} />
-            </InputGroup>
-          </Modal.Body>
-
-          <Modal.Footer>
-            <Button variant="outline-dark" onClick={this.handleModalClose}>
-              Cancel
-            </Button>
-            <Button variant="success" onClick={this.handleGameConfigSave}>
-              Save Changes
-            </Button>
-          </Modal.Footer>
+          <Form 
+            noValidate
+            validated={this.state.validated}
+            onSubmit={this.handleGameConfigSave}>
+            <Modal.Header closeButton>
+              <Modal.Title>Adjust game settings</Modal.Title>
+            </Modal.Header>
+  
+            <Modal.Body>
+              <InputGroup className="mb-3">
+                <InputGroup.Prepend>
+                  <InputGroup.Text>Number of cards</InputGroup.Text>
+                </InputGroup.Prepend>
+                <FormControl 
+                  type="number"
+                  min={1}
+                  max="72"
+                  step="1"
+                  value={this.props.cardNum.toString()}
+                  onChange={this.handleCardNumInputChange} />
+                <FormControl.Feedback type="invalid">
+                  Max card number should be an integer less than 72.
+                </FormControl.Feedback>
+              </InputGroup>
+  
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>Game time limit</InputGroup.Text>
+                </InputGroup.Prepend>
+                <FormControl 
+                  type="number"
+                  min={1}
+                  max={30}
+                  value={this.props.timeLimit.toString()}
+                  onChange={this.handleTimeLimitInputChange} />
+                <InputGroup.Append>
+                  <InputGroup.Text>minutes</InputGroup.Text>
+                </InputGroup.Append>
+                <FormControl.Feedback type="invalid">
+                  Time limit must be an integer less than 30.
+                </FormControl.Feedback>
+              </InputGroup>
+            </Modal.Body>
+  
+            <Modal.Footer>
+              <Button variant="outline-dark" onClick={this.handleModalClose}>
+                Cancel
+              </Button>
+              <Button variant="success" type="submit">
+                Save Changes
+              </Button>
+            </Modal.Footer>
+          </Form>
         </Modal>
       </Fragment>
     );

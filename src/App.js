@@ -10,11 +10,11 @@ class App extends Component {
 
   render() {
 
-    const cards = getInitialCards(6);
+    const cards = getInitialCards(4);
 
     return (
       <div className="App">
-        <GamePanel cards={cards} timeLimit={10}></GamePanel>
+        <GamePanel cards={cards} timeLimit={1}></GamePanel>
       </div>
     );
   }

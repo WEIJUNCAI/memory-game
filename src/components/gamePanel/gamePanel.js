@@ -6,6 +6,7 @@ import Container from 'react-bootstrap/lib/Container';
 import CardGrid from '../card/cardGrid';
 import GameHeader from './gameHeader';
 import Timer from './timer';
+import GameResultModal from './gameResultModal';
 
 import { generateRandomGrid } from '../../shared/randomGridHelper';
 
@@ -15,25 +16,32 @@ class GamePanel extends Component {
   constructor(props) {
     super(props);
     const { cards, timeLimit } = this.props;
+    const cardNum = cards.length * cards[0].length / 2;
     // fstTurnedCard records the most recent uncommitted card flip
     this.state = {
       cards: cards,
       fstTurnedCard: null,
       startTime: new Date(),
       currnetTime: new Date(),
+      prevCardNum: cardNum,
+      prevTimeLimit: timeLimit,
       timeLimit: timeLimit,
-      cardNum: cards.length * cards[0].length / 2
+      cardNum: cardNum,
+      resultModalShow: false
     };
     this.handleCardClick = this.handleCardClick.bind(this);
     this.handleResetClick = this.handleResetClick.bind(this);
     this.handleCardNumConfigChange = this.handleCardNumConfigChange.bind(this);
     this.handleTimeLimitConfigChange = this.handleTimeLimitConfigChange.bind(this);
-    this.handleModalSaveChange = this.handleModalSaveChange.bind(this);
+    this.handleGameConfigSaveChange = this.handleGameConfigSaveChange.bind(this);
+    this.handleGameConfigDiscardChange = this.handleGameConfigDiscardChange.bind(this);
+    this.handleGameResultModalClose = this.handleGameResultModalClose.bind(this);
   }
 
   componentDidMount() {
-    this.timerId = setInterval(
-      () => this.setState({ currnetTime: new Date() }),
+    this.timerId = setInterval(() => {
+      this.setState({ currnetTime: new Date() });
+    },
       1000
     );
   }
@@ -70,12 +78,13 @@ class GamePanel extends Component {
     setTimeout(() => {
       this.setState(prevState => {
         let newState = { ...prevState };
-        newState.fstTurnedCard = null;
 
         if (targetCard.displayVal !== prevState.fstTurnedCard.displayVal) {
           newState.cards[targetCard.rowIdx][targetCard.colIdx].isTurnedOver = false;
           newState.cards[prevState.fstTurnedCard.rowIdx][prevState.fstTurnedCard.colIdx].isTurnedOver = false;
         }
+
+        newState.fstTurnedCard = null;
 
         return newState;
       });
@@ -106,9 +115,10 @@ class GamePanel extends Component {
     this.setState({ timeLimit: newVal });
   }
 
-
-  handleModalSaveChange() {
-    const newCardNum = parseInt(this.state.cardNum, 10), 
+  // game settings changed, need to re-generate
+  // the game board
+  handleGameConfigSaveChange() {
+    const newCardNum = parseInt(this.state.cardNum, 10),
       newTimeLimit = parseInt(this.state.timeLimit, 10);
     const randNums = generateRandomGrid(newCardNum);
     const newGrid = randNums.map((randNumRow, rowIdx) =>
@@ -120,30 +130,86 @@ class GamePanel extends Component {
           isTurnedOver: false
         };
       }));
-    
+
     this.setState({
       cards: newGrid,
       fstTurnedCard: null,
       startTime: new Date(),
       currnetTime: new Date(),
+      prevCardNum: newCardNum,
+      prevTimeLimit: newTimeLimit,
       timeLimit: newTimeLimit,
-      cardNum: newCardNum
+      cardNum: newCardNum,
+      resultModalCloseClicked: false
     });
   }
 
-  getElapsedMinSec(startTime, endTime) {
+  // if user made changes to the game settings
+  // but did not save them, we need to restore the
+  // previous values
+  handleGameConfigDiscardChange() {
+    this.setState(prevState => {
+      return {
+        timeLimit: prevState.prevTimeLimit,
+        cardNum: prevState.prevCardNum
+      };
+    })
+  }
+
+  // when user close the result modal,
+  // reset all states in the game and restart it
+  handleGameResultModalClose() {
+    this.setState(prevState => {
+      let newState = { ...prevState };
+      newState.fstTurnedCard = null;
+      newState.startTime = new Date();
+      newState.currnetTime = new Date();
+      newState.resultModalCloseClicked = true;
+      newState.cards = newState.cards.map(cardRow =>
+        cardRow.map(card => {
+          return { ...card, isTurnedOver: false };
+        }));
+
+      return newState;
+    });
+  }
+
+  // calculate the time remaining, compared against
+  // the pre-set game time limit
+  getRemainingMinSec(startTime, endTime, timeLimitInMin) {
     const elapsedTotalSec = (endTime - startTime) / 1000;
+    const remainingTotalSec = timeLimitInMin * 60 - elapsedTotalSec;
     const result = {};
 
-    result.elapsedMin = Math.floor(elapsedTotalSec / 60);
-    result.elapsedSec = Math.floor(elapsedTotalSec % 60);
+    result.remainingMin = Math.floor(remainingTotalSec / 60);
+    result.remainingSec = Math.floor(remainingTotalSec % 60);
 
     return result;
   }
 
+  // check if all cards are in revealed state
+  // if so, the player wins
+  allCardsTurnedOver(cards) {
+    return cards.every(cardsRow =>
+      cardsRow.every(card => card.isTurnedOver)
+    );
+  }
 
   render() {
-    const { elapsedMin, elapsedSec } = this.getElapsedMinSec(this.state.startTime, this.state.currnetTime);
+    let { remainingMin, remainingSec } =
+      this.getRemainingMinSec(this.state.startTime, this.state.currnetTime, this.state.prevTimeLimit);
+
+    let showResultModal, resultModalMsg;
+    const allCardsRevealed = this.allCardsTurnedOver(this.state.cards);
+
+    if (this.state.resultModalCloseClicked) {
+      showResultModal = false;
+    } else if ((remainingMin <= 0 && remainingSec <= 0) || allCardsRevealed) {
+      resultModalMsg = allCardsRevealed ? "congratulations, you win!" : "Sorry, your time is up!"
+      remainingMin = 0;
+      remainingSec = 0;
+      showResultModal = true;
+    }
 
     return (
       <Fragment>
@@ -153,15 +219,20 @@ class GamePanel extends Component {
           onResetClick={this.handleResetClick}
           onCardNumConfigChange={this.handleCardNumConfigChange}
           onTimeLimitConfigChange={this.handleTimeLimitConfigChange}
-          onGameConfigSaved={this.handleModalSaveChange} />
+          onGameConfigSaved={this.handleGameConfigSaveChange}
+          onGameConfigCanceled={this.handleGameConfigDiscardChange} />
         <Container className="pt-3">
           <Timer
-            elapsedMin={elapsedMin}
-            elapsedSec={elapsedSec}></Timer>
+            remainingMin={remainingMin}
+            remainingSec={remainingSec}></Timer>
           <CardGrid
             cards={this.state.cards}
             onCardClick={this.handleCardClick} />
         </Container>
+        <GameResultModal
+          show={showResultModal}
+          gameResultMsg={resultModalMsg}
+          onGameResultModalClose={this.handleGameResultModalClose} />
       </Fragment>
     );
   }

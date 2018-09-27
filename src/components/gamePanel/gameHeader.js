@@ -20,7 +20,8 @@ class GameHeader extends Component {
               timeLimit={this.props.timeLimit}
               onCardNumConfigChange={this.props.onCardNumConfigChange}
               onTimeLimitConfigChange={this.props.onTimeLimitConfigChange}
-              onGameConfigSaved={this.props.onGameConfigSaved} />
+              onGameConfigSaved={this.props.onGameConfigSaved}
+              onGameConfigCanceled={this.props.onGameConfigCanceled} />
             <Button
               variant="outline-secondary"
               onClick={this.props.onResetClick}>Reset cards</Button>
