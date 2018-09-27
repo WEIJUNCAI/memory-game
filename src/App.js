@@ -14,7 +14,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <GamePanel cards={cards}></GamePanel>
+        <GamePanel cards={cards} timeLimit={10}></GamePanel>
       </div>
     );
   }

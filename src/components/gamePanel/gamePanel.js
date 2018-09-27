@@ -1,28 +1,39 @@
 import React, { Component } from 'react';
+import { Fragment } from 'react';
+
 import Container from 'react-bootstrap/lib/Container';
 
 import CardGrid from '../card/cardGrid';
 import GameHeader from './gameHeader';
-import Timer from './timer'; 
+import Timer from './timer';
+
+import { generateRandomGrid } from '../../shared/randomGridHelper';
+
 
 class GamePanel extends Component {
 
   constructor(props) {
     super(props);
+    const { cards, timeLimit } = this.props;
     // fstTurnedCard records the most recent uncommitted card flip
     this.state = {
-       cards: props.cards, 
-       fstTurnedCard: null, 
-       startTime: new Date(),
-       currnetTime: new Date()
-      };
+      cards: cards,
+      fstTurnedCard: null,
+      startTime: new Date(),
+      currnetTime: new Date(),
+      timeLimit: timeLimit,
+      cardNum: cards.length * cards[0].length / 2
+    };
     this.handleCardClick = this.handleCardClick.bind(this);
     this.handleResetClick = this.handleResetClick.bind(this);
+    this.handleCardNumConfigChange = this.handleCardNumConfigChange.bind(this);
+    this.handleTimeLimitConfigChange = this.handleTimeLimitConfigChange.bind(this);
+    this.handleModalSaveChange = this.handleModalSaveChange.bind(this);
   }
 
   componentDidMount() {
     this.timerId = setInterval(
-      () => this.setState({ currnetTime: new Date() }), 
+      () => this.setState({ currnetTime: new Date() }),
       1000
     );
   }
@@ -87,6 +98,39 @@ class GamePanel extends Component {
     });
   }
 
+  handleCardNumConfigChange(newVal) {
+    this.setState({ cardNum: newVal });
+  }
+
+  handleTimeLimitConfigChange(newVal) {
+    this.setState({ timeLimit: newVal });
+  }
+
+
+  handleModalSaveChange() {
+    const newCardNum = parseInt(this.state.cardNum, 10), 
+      newTimeLimit = parseInt(this.state.timeLimit, 10);
+    const randNums = generateRandomGrid(newCardNum);
+    const newGrid = randNums.map((randNumRow, rowIdx) =>
+      randNumRow.map((randNum, colIdx) => {
+        return {
+          row: rowIdx,
+          col: colIdx,
+          content: randNum,
+          isTurnedOver: false
+        };
+      }));
+    
+    this.setState({
+      cards: newGrid,
+      fstTurnedCard: null,
+      startTime: new Date(),
+      currnetTime: new Date(),
+      timeLimit: newTimeLimit,
+      cardNum: newCardNum
+    });
+  }
+
   getElapsedMinSec(startTime, endTime) {
     const elapsedTotalSec = (endTime - startTime) / 1000;
     const result = {};
@@ -102,16 +146,23 @@ class GamePanel extends Component {
     const { elapsedMin, elapsedSec } = this.getElapsedMinSec(this.state.startTime, this.state.currnetTime);
 
     return (
-      <Container className="pt-3">
+      <Fragment>
         <GameHeader
-          onResetClick={this.handleResetClick}></GameHeader>
-        <Timer
-          elapsedMin={elapsedMin}
-          elapsedSec={elapsedSec}></Timer>
-        <CardGrid
-          cards={this.state.cards}
-          onCardClick={this.handleCardClick} />
-      </Container>
+          cardNum={this.state.cardNum}
+          timeLimit={this.state.timeLimit}
+          onResetClick={this.handleResetClick}
+          onCardNumConfigChange={this.handleCardNumConfigChange}
+          onTimeLimitConfigChange={this.handleTimeLimitConfigChange}
+          onGameConfigSaved={this.handleModalSaveChange} />
+        <Container className="pt-3">
+          <Timer
+            elapsedMin={elapsedMin}
+            elapsedSec={elapsedSec}></Timer>
+          <CardGrid
+            cards={this.state.cards}
+            onCardClick={this.handleCardClick} />
+        </Container>
+      </Fragment>
     );
   }
 }

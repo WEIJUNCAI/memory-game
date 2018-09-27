@@ -1,22 +1,32 @@
 import React, { Component } from 'react';
+
 import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
+import Navbar from 'react-bootstrap/lib/Navbar';
+import Nav from 'react-bootstrap/lib/Nav';
+
+import GameConfig from './gameConfig';
 
 class GameHeader extends Component {
 
   render() {
     return (
-      <div className="d-flex justify-content-between border-bottom pb-2 mb-3">
-        <h1 className="h2">Memory Game</h1>
-        <ButtonToolbar>
-          <ButtonGroup>
-            <Button 
+      <Navbar bg="light" expand="md" className="justify-content-between mb-3 py-3">
+        <Navbar.Brand>Memory Game</Navbar.Brand>
+        <Navbar.Toggle aria-controls="navbar-nav" />
+        <Navbar.Collapse id="navbar-nav" className="justify-content-end">
+          <Nav>
+            <GameConfig 
+              cardNum={this.props.cardNum}
+              timeLimit={this.props.timeLimit}
+              onCardNumConfigChange={this.props.onCardNumConfigChange}
+              onTimeLimitConfigChange={this.props.onTimeLimitConfigChange}
+              onGameConfigSaved={this.props.onGameConfigSaved} />
+            <Button
               variant="outline-secondary"
               onClick={this.props.onResetClick}>Reset cards</Button>
-          </ButtonGroup>
-        </ButtonToolbar>
-      </div>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
     );
   }
 }
