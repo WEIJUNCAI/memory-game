@@ -7,7 +7,7 @@ This demo project is a simple memory game built with React.
 - Notifying the user about the game result;
 - Allowing the user to reset at any time;
 - Randomizing cards for ever game;
-- Adjusting difficulty levels (number of cards, tiem limit);
+- Adjusting difficulty levels (number of cards, time limit);
 - Tracking time.
 
 ## Run The App
