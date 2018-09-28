@@ -28,7 +28,7 @@ class Card extends Component {
 }
 
 Card.propTypes = {
-  displayVal: PropTypes.string.isRequired,
+  displayVal: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   isTurnedOver: PropTypes.bool.isRequired
 }
 

@@ -22,6 +22,7 @@ class GamePanel extends Component {
     this.state = {
       cards: cards,
       fstTurnedCard: null,
+      sndCardClicked: false,
       startTime: new Date(),
       currnetTime: new Date(),
       prevCardNum: cardNum,
@@ -53,6 +54,13 @@ class GamePanel extends Component {
 
   handleCardClick(targetCard) {
 
+    // if the second uncommitted card is clicked but its state change (scheduled to happen in 1 sec)
+    // has not happend yet, we should prevent any further state change caused
+    // by clicking 
+    if(this.state.sndCardClicked) {
+      return;
+    }
+
     let isFstCardTurn = this.state.fstTurnedCard === null;
 
     // the clicked card should be revealed
@@ -76,6 +84,11 @@ class GamePanel extends Component {
     // is the same as that of the first card, we should either
     // - make the flip permanet, or
     // - turn both cards back to hidden
+    this.setState({sndCardClicked: true});
+
+    // the state change of the second card is scheduled to run
+    // after 1 second, which gives the user to still see the card
+    // even if two cards do not match 
     setTimeout(() => {
       this.setState(prevState => {
         let newState = { ...prevState };
@@ -86,7 +99,7 @@ class GamePanel extends Component {
         }
 
         newState.fstTurnedCard = null;
-
+        newState.sndCardClicked = false;
         return newState;
       });
     }, 1000);
@@ -97,6 +110,7 @@ class GamePanel extends Component {
     this.setState(prevState => {
       let newState = { ...prevState };
       newState.fstTurnedCard = null;
+      newState.sndCardClicked = false;
       newState.startTime = new Date();
       newState.currnetTime = new Date();
       newState.cards = newState.cards.map(cardRow =>
@@ -135,6 +149,7 @@ class GamePanel extends Component {
     this.setState({
       cards: newGrid,
       fstTurnedCard: null,
+      sndCardClicked: false,
       startTime: new Date(),
       currnetTime: new Date(),
       prevCardNum: newCardNum,
@@ -163,6 +178,7 @@ class GamePanel extends Component {
     this.setState(prevState => {
       let newState = { ...prevState };
       newState.fstTurnedCard = null;
+      newState.sndCardClicked = false;
       newState.startTime = new Date();
       newState.currnetTime = new Date();
       newState.resultModalCloseClicked = true;
@@ -210,6 +226,8 @@ class GamePanel extends Component {
       remainingMin = 0;
       remainingSec = 0;
       showResultModal = true;
+    } else {
+      showResultModal = false;
     }
 
     return (

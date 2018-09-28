@@ -18,7 +18,11 @@ class GameResultModal extends Component {
 
   render() {
     return (
-      <Modal show={this.props.show} onHide={this.handleModalClose}>
+      <Modal 
+        show={this.props.show} 
+        onHide={this.handleModalClose}
+        backdrop="static"
+        centered>
         <Modal.Header closeButton>
           <Modal.Title>Game finished</Modal.Title>
         </Modal.Header>
